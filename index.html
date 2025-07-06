@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập hệ thống xử án RLIFE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+  <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-yellow-300 mb-6">🔒 Đăng nhập hệ thống xử án RLIFE</h1>
+
+    <div id="admin-panel" class="hidden">
+      <h2 class="text-lg font-bold text-green-400 mb-4">🛠️ Quản lý tài khoản</h2>
+      <input id="new-username" type="text" placeholder="Tên người dùng mới" class="w-full p-2 mb-2 rounded text-black" />
+      <input id="new-password" type="password" placeholder="Mật khẩu" class="w-full p-2 mb-2 rounded text-black" />
+      <button onclick="addUser()" class="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded mb-2">➕ Thêm tài khoản</button>
+
+      <input id="delete-username" type="text" placeholder="Tên người dùng cần xoá" class="w-full p-2 mb-2 rounded text-black" />
+      <button onclick="deleteUser()" class="w-full bg-red-600 hover:bg-red-700 text-white p-2 rounded">🗑️ Xoá tài khoản</button>
+
+      <div class="mt-4">
+        <button onclick="logout()" class="w-full bg-gray-700 hover:bg-gray-600 text-white p-2 rounded">🚪 Đăng xuất</button>
+      </div>
+    </div>
+
+    <div id="login-panel">
+      <input id="username" type="text" placeholder="Tên người dùng" class="w-full p-2 mb-2 rounded text-black" />
+      <input id="password" type="password" placeholder="Mật khẩu" class="w-full p-2 mb-4 rounded text-black" />
+      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded">🔑 Đăng nhập</button>
+    </div>
+
+    <p id="message" class="mt-4 text-center text-red-400"></p>
+  </div>
+
+  <script>
+    const adminUsername = 'admin';
+    const adminPassword = '123456'; // Bạn có thể thay đổi mật khẩu admin ở đây
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users') || '{}');
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === adminUsername && password === adminPassword) {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        document.getElementById('login-panel').classList.add('hidden');
+        document.getElementById('message').textContent = 'Đăng nhập thành công với quyền admin.';
+        return;
+      }
+
+      const users = getUsers();
+      if (users[username] && users[username] === password) {
+        window.location.href = 'gta-xu-an-hoan-chinh.html';
+      } else {
+        document.getElementById('message').textContent = 'Tên người dùng hoặc mật khẩu không đúng.';
+      }
+    }
+
+    function addUser() {
+      const username = document.getElementById('new-username').value.trim();
+      const password = document.getElementById('new-password').value.trim();
+
+      if (!username || !password) {
+        document.getElementById('message').textContent = 'Vui lòng nhập tên người dùng và mật khẩu.';
+        return;
+      }
+
+      const users = getUsers();
+      if (users[username]) {
+        document.getElementById('message').textContent = 'Tài khoản đã tồn tại.';
+        return;
+      }
+      users[username] = password;
+      saveUsers(users);
+      document.getElementById('message').textContent = 'Thêm tài khoản thành công.';
+      document.getElementById('new-username').value = '';
+      document.getElementById('new-password').value = '';
+    }
+
+    function deleteUser() {
+      const username = document.getElementById('delete-username').value.trim();
+      if (!username) {
+        document.getElementById('message').textContent = 'Vui lòng nhập tên người dùng cần xoá.';
+        return;
+      }
+      const users = getUsers();
+      if (!users[username]) {
+        document.getElementById('message').textContent = 'Tài khoản không tồn tại.';
+        return;
+      }
+      delete users[username];
+      saveUsers(users);
+      document.getElementById('message').textContent = 'Đã xoá tài khoản thành công.';
+      document.getElementById('delete-username').value = '';
+    }
+
+    function logout() {
+      document.getElementById('admin-panel').classList.add('hidden');
+      document.getElementById('login-panel').classList.remove('hidden');
+      document.getElementById('message').textContent = 'Đã đăng xuất.';
+    }
+  </script>
+</body>
+</html>
